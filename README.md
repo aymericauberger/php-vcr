@@ -30,7 +30,7 @@ Disclaimer: Doing this in PHP is not as easy as in programming languages which s
 Using static method calls:
 
 ``` php
-class VCRTest extends \PHPUnit_Framework_TestCase
+class VCRTest extends \PHPUnit\Framework\TestCase
 {
     public function testShouldInterceptStreamWrapper()
     {
@@ -53,7 +53,7 @@ class VCRTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldThrowExceptionIfNoCasettePresent()
     {
-        $this->setExpectedException(
+        $this->expectException(
             'BadMethodCallException',
             "Invalid http request. No cassette inserted. Please make sure to insert "
             . "a cassette in your unit test using VCR::insertCassette('name');"
@@ -68,7 +68,7 @@ class VCRTest extends \PHPUnit_Framework_TestCase
 You can use annotations in PHPUnit by using [phpunit-testlistener-vcr](https://github.com/php-vcr/phpunit-testlistener-vcr):
 
 ``` php
-class VCRTest extends \PHPUnit_Framework_TestCase
+class VCRTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @vcr unittest_annotation_test

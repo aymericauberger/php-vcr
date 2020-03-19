@@ -2,18 +2,18 @@
 
 namespace VCR\Storage;
 
-class BlackholeTest extends \PHPUnit_Framework_TestCase
+class BlackholeTest extends \PHPUnit\Framework\TestCase
 {
     protected $storage;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->storage = new Blackhole();
     }
 
     public function testStoreRecordingIsCallable()
     {
-        $this->assertNull($this->storage->storeRecording(array('empty or not, we don\'t care')));
+        $this->assertNull($this->storage->storeRecording(['empty or not, we don\'t care']));
     }
 
     public function testNextIsCallable()

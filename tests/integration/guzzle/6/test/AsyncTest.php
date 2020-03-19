@@ -8,7 +8,7 @@ use org\bovigo\vfs\vfsStream;
 /**
  * Tests example request.
  */
-class AsyncTest extends \PHPUnit_Framework_TestCase
+class AsyncTest extends \PHPUnit\Framework\TestCase
 {
     const TEST_GET_URL = 'https://api.chew.pro/trbmb';
     const TEST_GET_URL_2 = 'https://api.chew.pro/trbmb?foo=42';

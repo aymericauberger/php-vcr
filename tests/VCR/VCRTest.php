@@ -2,23 +2,23 @@
 
 namespace VCR;
 
-use Symfony\Component\EventDispatcher\Event;
 use org\bovigo\vfs\vfsStream;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Test integration of PHPVCR with PHPUnit.
  */
-class VCRTest extends \PHPUnit_Framework_TestCase
+class VCRTest extends \PHPUnit\Framework\TestCase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass(): void
     {
         VCR::configure()->setCassettePath('tests/fixtures') ;
     }
 
     public function testUseStaticCallsNotInitialized()
     {
-        VCR::configure()->enableLibraryHooks(array('stream_wrapper'));
-        $this->setExpectedException(
+        VCR::configure()->enableLibraryHooks(['stream_wrapper']);
+        $this->expectException(
             'VCR\VCRException',
             'Please turn on VCR before inserting a cassette, use: VCR::turnOn()'
         );
@@ -27,7 +27,7 @@ class VCRTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldInterceptStreamWrapper()
     {
-        VCR::configure()->enableLibraryHooks(array('stream_wrapper'));
+        VCR::configure()->enableLibraryHooks(['stream_wrapper']);
         VCR::turnOn();
         VCR::insertCassette('unittest_streamwrapper_test');
         $result = file_get_contents('http://example.com');
@@ -38,7 +38,7 @@ class VCRTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldInterceptCurlLibrary()
     {
-        VCR::configure()->enableLibraryHooks(array('curl'));
+        VCR::configure()->enableLibraryHooks(['curl']);
         VCR::turnOn();
         VCR::insertCassette('unittest_curl_test');
 
@@ -63,12 +63,12 @@ class VCRTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldInterceptSoapLibrary()
     {
-        VCR::configure()->enableLibraryHooks(array('soap'));
+        VCR::configure()->enableLibraryHooks(['soap']);
         VCR::turnOn();
         VCR::insertCassette('unittest_soap_test');
 
-        $client = new \SoapClient('https://raw.githubusercontent.com/php-vcr/php-vcr/master/tests/fixtures/soap/wsdl/weather.wsdl', array('soap_version' => SOAP_1_2));
-        $actual = $client->GetCityWeatherByZIP(array('ZIP' => '10013'));
+        $client = new \SoapClient('https://raw.githubusercontent.com/php-vcr/php-vcr/master/tests/fixtures/soap/wsdl/weather.wsdl', ['soap_version' => SOAP_1_2]);
+        $actual = $client->GetCityWeatherByZIP(['ZIP' => '10013']);
         $temperature = $actual->GetCityWeatherByZIPResult->Temperature;
 
         $this->assertEquals('1337', $temperature, 'Soap call was not intercepted.');
@@ -82,7 +82,7 @@ class VCRTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('/dev/urandom is not supported on Windows');
         }
 
-        VCR::configure()->enableLibraryHooks(array('stream_wrapper'));
+        VCR::configure()->enableLibraryHooks(['stream_wrapper']);
         VCR::turnOn();
         VCR::insertCassette('unittest_urandom_test');
 
@@ -96,13 +96,13 @@ class VCRTest extends \PHPUnit_Framework_TestCase
 
     public function testShouldThrowExceptionIfNoCassettePresent()
     {
-        $this->setExpectedException(
+        $this->expectException(
             'BadMethodCallException',
             'Invalid http request. No cassette inserted. Please make sure to insert '
             . "a cassette in your unit test using VCR::insertCassette('name');"
         );
 
-        VCR::configure()->enableLibraryHooks(array('stream_wrapper'));
+        VCR::configure()->enableLibraryHooks(['stream_wrapper']);
         VCR::turnOn();
         // If there is no cassette inserted, a request should throw an exception
         file_get_contents('http://example.com');
@@ -124,7 +124,7 @@ class VCRTest extends \PHPUnit_Framework_TestCase
         $this->configureVirtualCassette();
 
         VCR::turnOn();
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         VCR::insertCassette('unittest_cassette1');
         throw new \InvalidArgumentException('test');
     }
@@ -146,7 +146,7 @@ class VCRTest extends \PHPUnit_Framework_TestCase
     public function testShouldDispatchBeforeAndAfterPlaybackWhenCassetteHasResponse()
     {
         VCR::configure()
-            ->enableLibraryHooks(array('curl'));
+            ->enableLibraryHooks(['curl']);
         $this->recordAllEvents();
         VCR::turnOn();
         VCR::insertCassette('unittest_curl_test');
@@ -154,7 +154,7 @@ class VCRTest extends \PHPUnit_Framework_TestCase
         $this->doCurlGetRequest('http://google.com/');
 
         $this->assertEquals(
-            array(VCREvents::VCR_BEFORE_PLAYBACK, VCREvents::VCR_AFTER_PLAYBACK),
+            [VCREvents::VCR_BEFORE_PLAYBACK, VCREvents::VCR_AFTER_PLAYBACK],
             $this->getRecordedEventNames()
         );
         VCR::eject();
@@ -166,7 +166,7 @@ class VCRTest extends \PHPUnit_Framework_TestCase
         vfsStream::setup('testDir');
         VCR::configure()
             ->setCassettePath(vfsStream::url('testDir'))
-            ->enableLibraryHooks(array('curl'));
+            ->enableLibraryHooks(['curl']);
         $this->recordAllEvents();
         VCR::turnOn();
         VCR::insertCassette('virtual_cassette');
@@ -174,12 +174,12 @@ class VCRTest extends \PHPUnit_Framework_TestCase
         $this->doCurlGetRequest('http://google.com/');
 
         $this->assertEquals(
-            array(
+            [
                 VCREvents::VCR_BEFORE_PLAYBACK,
                 VCREvents::VCR_BEFORE_HTTP_REQUEST,
                 VCREvents::VCR_AFTER_HTTP_REQUEST,
                 VCREvents::VCR_BEFORE_RECORD
-            ),
+            ],
             $this->getRecordedEventNames()
         );
         VCR::eject();
@@ -188,15 +188,15 @@ class VCRTest extends \PHPUnit_Framework_TestCase
 
     private function recordAllEvents()
     {
-        $allEventsToListen = array(
+        $allEventsToListen = [
             VCREvents::VCR_BEFORE_PLAYBACK,
             VCREvents::VCR_AFTER_PLAYBACK,
             VCREvents::VCR_BEFORE_HTTP_REQUEST,
             VCREvents::VCR_AFTER_HTTP_REQUEST,
             VCREvents::VCR_BEFORE_RECORD,
-        );
+        ];
         foreach ($allEventsToListen as $eventToListen) {
-            VCR::getEventDispatcher()->addListener($eventToListen, array($this, 'recordEvent'));
+            VCR::getEventDispatcher()->addListener($eventToListen, [$this, 'recordEvent']);
         }
     }
 

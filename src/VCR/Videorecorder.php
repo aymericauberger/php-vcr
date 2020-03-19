@@ -4,14 +4,14 @@ namespace VCR;
 
 use VCR\Util\Assertion;
 use VCR\Util\HttpClient;
-use VCR\Event\AfterHttpRequestEvent;
-use VCR\Event\AfterPlaybackEvent;
-use VCR\Event\BeforeHttpRequestEvent;
-use VCR\Event\BeforePlaybackEvent;
 use VCR\Event\BeforeRecordEvent;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use VCR\Event\AfterPlaybackEvent;
+use VCR\Event\BeforePlaybackEvent;
+use VCR\Event\AfterHttpRequestEvent;
+use VCR\Event\BeforeHttpRequestEvent;
+use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * A videorecorder records requests on a cassette.
@@ -101,7 +101,7 @@ class Videorecorder
      */
     private function dispatch($eventName, Event $event = null)
     {
-        return $this->getEventDispatcher()->dispatch($eventName, $event);
+        return $this->getEventDispatcher()->dispatch($event, $eventName);
     }
 
     /**
@@ -174,7 +174,7 @@ class Videorecorder
             $this->eject();
         }
 
-        $storage = $this->factory->get('Storage', array($cassetteName));
+        $storage = $this->factory->get('Storage', [$cassetteName]);
 
         $this->cassette = new Cassette($cassetteName, $this->config, $storage);
         $this->enableLibraryHooks();

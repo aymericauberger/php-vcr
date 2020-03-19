@@ -3,19 +3,19 @@
 namespace VCR\Event;
 
 use VCR\Request;
-use VCR\Cassette;
-use VCR\Configuration;
 use VCR\Storage;
+use VCR\Cassette;
 use VCR\Response;
+use VCR\Configuration;
 
-class AfterPlaybackEventTest extends \PHPUnit_Framework_TestCase
+class AfterPlaybackEventTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var AfterPlaybackEvent
      */
     private $event;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->event = new AfterPlaybackEvent(
             new Request('GET', 'http://example.com'),

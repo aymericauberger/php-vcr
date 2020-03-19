@@ -7,18 +7,18 @@ use org\bovigo\vfs\vfsStream;
 /**
  * Tests example request.
  */
-class ExampleHttpClientTest extends \PHPUnit_Framework_TestCase
+class ExampleHttpClientTest extends \PHPUnit\Framework\TestCase
 {
     const TEST_GET_URL = 'https://api.chew.pro/trbmb';
     const TEST_POST_URL = 'https://httpbin.org/post';
     const TEST_POST_BODY = '{"foo":"bar"}';
 
-    protected $ignoreHeaders = array(
+    protected $ignoreHeaders = [
         'Accept',
         'Connect-Time',
         'Total-Route-Time',
         'X-Request-Id',
-    );
+    ];
 
     public function setUp()
     {

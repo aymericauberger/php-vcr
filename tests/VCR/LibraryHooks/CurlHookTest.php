@@ -5,13 +5,13 @@ namespace VCR\LibraryHooks;
 use VCR\Request;
 use VCR\Response;
 use VCR\Configuration;
-use VCR\CodeTransform\CurlCodeTransform;
 use VCR\Util\StreamProcessor;
+use VCR\CodeTransform\CurlCodeTransform;
 
 /**
  * Test if intercepting http/https using curl works.
  */
-class CurlHookTest extends \PHPUnit_Framework_TestCase
+class CurlHookTest extends \PHPUnit\Framework\TestCase
 {
     public $expected = 'example response body';
     /**
@@ -23,7 +23,7 @@ class CurlHookTest extends \PHPUnit_Framework_TestCase
      */
     protected $curlHook;
 
-    public function setup()
+    public function setup(): void
     {
         $this->config = new Configuration();
         $this->curlHook = new CurlHook(new CurlCodeTransform(), new StreamProcessor($this->config));
@@ -125,7 +125,7 @@ class CurlHookTest extends \PHPUnit_Framework_TestCase
         $this->curlHook->enable(
             function (Request $request) use ($testClass) {
                 $testClass->assertEquals(
-                    array('para1' => 'val1', 'para2' => 'val2'),
+                    ['para1' => 'val1', 'para2' => 'val2'],
                     $request->getPostFields(),
                     'Post query string was not parsed and set correctly.'
                 );
@@ -134,7 +134,7 @@ class CurlHookTest extends \PHPUnit_Framework_TestCase
         );
 
         $curlHandle = curl_init('http://example.com');
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS, array('para1' => 'val1', 'para2' => 'val2'));
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS, ['para1' => 'val1', 'para2' => 'val2']);
         curl_exec($curlHandle);
         curl_close($curlHandle);
         $this->curlHook->disable();
@@ -146,7 +146,7 @@ class CurlHookTest extends \PHPUnit_Framework_TestCase
         $this->curlHook->enable(
             function (Request $request) use ($testClass) {
                 $testClass->assertEquals(
-                    array('para1' => 'val1', 'para2' => 'val2'),
+                    ['para1' => 'val1', 'para2' => 'val2'],
                     $request->getPostFields(),
                     'Post query string was not parsed and set correctly.'
                 );
@@ -157,9 +157,9 @@ class CurlHookTest extends \PHPUnit_Framework_TestCase
         $curlHandle = curl_init('http://example.com');
         curl_setopt_array(
             $curlHandle,
-            array(
-                CURLOPT_POSTFIELDS => array('para1' => 'val1', 'para2' => 'val2')
-            )
+            [
+                CURLOPT_POSTFIELDS => ['para1' => 'val1', 'para2' => 'val2']
+            ]
         );
         curl_exec($curlHandle);
         curl_close($curlHandle);
@@ -300,13 +300,13 @@ class CurlHookTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(2, $callCount, 'Hook should have been called twice.');
         $this->assertEquals(
-            array('msg' => 1, 'result' => 0, 'handle' => $curlHandle2),
+            ['msg' => 1, 'result' => 0, 'handle' => $curlHandle2],
             $lastInfo,
             'When called the first time curl_multi_info_read should return last curl info.'
         );
 
         $this->assertEquals(
-            array('msg' => 1, 'result' => 0, 'handle' => $curlHandle1),
+            ['msg' => 1, 'result' => 0, 'handle' => $curlHandle1],
             $secondLastInfo,
             'When called the second time curl_multi_info_read should return second to last curl info.'
         );
@@ -365,7 +365,7 @@ class CurlHookTest extends \PHPUnit_Framework_TestCase
     {
         $testClass = $this;
         return function () use ($statusCode, $testClass) {
-            return new Response($statusCode, array(), $testClass->expected);
+            return new Response($statusCode, [], $testClass->expected);
         };
     }
 }

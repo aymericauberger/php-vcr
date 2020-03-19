@@ -3,10 +3,8 @@
 namespace VCR\Util;
 
 use lapistano\ProxyObject\ProxyBuilder;
-use VCR\VCRException;
-use VCR\Util\SoapClient;
 
-class SoapClientTest extends \PHPUnit_Framework_TestCase
+class SoapClientTest extends \PHPUnit\Framework\TestCase
 {
     const WSDL = 'https://raw.githubusercontent.com/php-vcr/php-vcr/master/tests/fixtures/soap/wsdl/weather.wsdl';
     const ACTION = 'http://ws.cdyne.com/WeatherWS/GetCityWeatherByZIP';
@@ -15,7 +13,7 @@ class SoapClientTest extends \PHPUnit_Framework_TestCase
     {
         $hookMock = $this->getMockBuilder('\VCR\LibraryHooks\SoapHook')
             ->disableOriginalConstructor()
-            ->setMethods(array('isEnabled', 'doRequest'))
+            ->setMethods(['isEnabled', 'doRequest'])
             ->getMock();
 
         $hookMock
@@ -81,7 +79,7 @@ class SoapClientTest extends \PHPUnit_Framework_TestCase
     {
         $client = $this->getMockBuilder('\VCR\Util\SoapClient')
             ->disableOriginalConstructor()
-            ->setMethods(array('realDoRequest'))
+            ->setMethods(['realDoRequest'])
             ->getMock();
 
         $client
@@ -118,7 +116,7 @@ class SoapClientTest extends \PHPUnit_Framework_TestCase
         $client = new SoapClient(self::WSDL);
         $client->setLibraryHook($hook);
 
-        $this->setExpectedException($exception);
+        $this->expectException($exception);
 
         $client->__doRequest('Knorx ist groß', self::WSDL, self::ACTION, SOAP_1_2);
     }
@@ -130,7 +128,7 @@ class SoapClientTest extends \PHPUnit_Framework_TestCase
         $proxy = new ProxyBuilder('\VCR\Util\SoapClient');
         $client = $proxy
             ->disableOriginalConstructor()
-            ->setMethods(array('getLibraryHook'))
+            ->setMethods(['getLibraryHook'])
             ->getProxy();
 
         $this->assertInstanceOf('\VCR\LibraryHooks\SoapHook', $client->getLibraryHook());

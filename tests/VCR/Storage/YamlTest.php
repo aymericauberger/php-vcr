@@ -7,9 +7,9 @@ use org\bovigo\vfs\vfsStream;
 /**
  * Test integration of PHPVCR with PHPUnit.
  */
-class YamlTest extends \PHPUnit_Framework_TestCase
+class YamlTest extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         vfsStream::setup('test');
         $this->filePath = vfsStream::url('test/') . DIRECTORY_SEPARATOR . 'yaml_test';
@@ -21,9 +21,9 @@ class YamlTest extends \PHPUnit_Framework_TestCase
         $this->iterateAndTest(
             '-' . "\n"
             . '    para1: val1',
-            array(
-                array('para1' => 'val1'),
-            ),
+            [
+                ['para1' => 'val1'],
+            ],
             'Single yaml object was not parsed correctly.'
         );
     }
@@ -35,10 +35,10 @@ class YamlTest extends \PHPUnit_Framework_TestCase
             . '    para1: val1' . "\n"
             . '-' . "\n"
             . '   para2: val2',
-            array(
-                array('para1' => 'val1'),
-                array('para2' => 'val2'),
-            ),
+            [
+                ['para1' => 'val1'],
+                ['para2' => 'val2'],
+            ],
             'Two yaml objects were not parsed correctly.'
         );
     }
@@ -51,10 +51,10 @@ class YamlTest extends \PHPUnit_Framework_TestCase
             . '        para2: val2' . "\n"
             . '-' . "\n"
             . '    para3: val3',
-            array(
-                array('para1' => array('para2' => 'val2')),
-                array('para3' => 'val3'),
-            ),
+            [
+                ['para1' => ['para2' => 'val2']],
+                ['para3' => 'val3'],
+            ],
             'Nested yaml objects were not parsed correctly.'
         );
     }
@@ -67,10 +67,10 @@ class YamlTest extends \PHPUnit_Framework_TestCase
             . '-' . "\n"
             . '    para2:' . "\n"
             . '        para3: val3' . "\n",
-            array(
-                array('para1' => 'val1'),
-                array('para2' => array('para3' => 'val3')),
-            ),
+            [
+                ['para1' => 'val1'],
+                ['para2' => ['para3' => 'val3']],
+            ],
             'Nested yaml objects were not parsed correctly.'
         );
     }
@@ -79,21 +79,21 @@ class YamlTest extends \PHPUnit_Framework_TestCase
     {
         $this->iterateAndTest(
             '',
-            array(),
+            [],
             'Empty yaml was not parsed correctly.'
         );
     }
 
     public function testStoreRecording()
     {
-        $expected = array(
+        $expected = [
             'request' => 'some request',
             'response' => 'some response'
-        );
+        ];
 
         $this->yamlObject->storeRecording($expected);
 
-        $actual = array();
+        $actual = [];
         foreach ($this->yamlObject as $recording) {
             $actual[] = $recording;
         }
@@ -103,15 +103,15 @@ class YamlTest extends \PHPUnit_Framework_TestCase
 
     public function testStoreTwoRecording()
     {
-        $expected = array(
-            'request'  => array('headers' => array('Content-Type' => 'application/json')),
-            'response' => array('body' => 'ok', 'status' => 200)
-        );
+        $expected = [
+            'request'  => ['headers' => ['Content-Type' => 'application/json']],
+            'response' => ['body' => 'ok', 'status' => 200]
+        ];
 
         $this->yamlObject->storeRecording($expected);
         $this->yamlObject->storeRecording($expected);
 
-        $actual = array();
+        $actual = [];
         foreach ($this->yamlObject as $recording) {
             $actual[] = $recording;
         }
@@ -124,7 +124,7 @@ class YamlTest extends \PHPUnit_Framework_TestCase
     {
         file_put_contents($this->filePath, $yaml);
 
-        $actual = array();
+        $actual = [];
         foreach ($this->yamlObject as $object) {
             $actual[] = $object;
         }
